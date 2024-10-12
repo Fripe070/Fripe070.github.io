@@ -1,0 +1,107 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+
+import TabBar from '../components/TabBar.astro';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<div class="terminal-window">
+			<nav>
+				<TabBar tabs={[{ title: 'Home', href: '/' }, { title: 'About', href: '/about' }, { title: 'Contact', href: '/contact' }]} />
+			</nav>
+			<main>
+				<slot />
+			</main>
+		</div>
+	</body>
+</html>
+
+<style lang="scss">
+	body {
+		padding: 1.5ch;
+		display: flex;
+	}
+
+	.terminal-window {
+		outline: 2px solid var(--darkest-bg);
+		background: var(--darkest-bg);
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		--line-height: 2ch;
+		line-height: var(--line-height);
+		main {
+			margin: 1ch;
+			flex: 1;
+			position: relative;
+		}
+	}
+</style>
+
+
+<style is:global>
+	@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+	@import url('https://www.nerdfonts.com/assets/css/webfont.css');
+
+	:root {
+		--text-normal: #d7dae0;
+		--text-darker: #abb2bf;
+		--text-muted: #7f848e;
+		
+		--lightest-bg: #3c424c;
+		--lighter-bg: #333842;
+		--light-bg: #2c313a;
+		--dark-bg: #282c34;
+		--darker-bg: #21252b;
+		--darkest-bg: #181b20;
+		--darkestest-bg: #101317;
+
+		--one-dark-red: #BE5046;
+		--one-dark-coral: #e06c75;
+		--one-dark-yellow: #e5c07b;
+		--one-dark-orange: #d19a66;
+		--one-dark-green: #98c379;
+		--one-dark-cyan: #56b6c2;
+		--one-dark-blue: #61afef;
+		--one-dark-purple: #c678dd;
+	}
+	html {
+		background: #090b0e;
+		color: var(--text-normal);
+		font-family: 
+			JetBrains Mono,
+			Menlo,
+			Monaco,
+			Lucida Console,
+			Liberation Mono,
+			DejaVu Sans Mono,
+			Bitstream Vera Sans Mono,
+			Courier New,
+			monospace;
+		font-size: 18px;
+	}
+
+	html, body {
+		margin: 0;
+		padding: 0;
+		min-height: 100vh;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+</style>
