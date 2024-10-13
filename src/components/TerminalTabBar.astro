@@ -1,0 +1,157 @@
+---
+export interface Tab {
+	title: string;
+    href: string;
+}
+
+interface Props {
+    tabs: Tab[];
+    title?: string;
+}
+
+const { tabs, title } = Astro.props;
+---
+
+<div class="tab-bar">
+    <div id="tab-bar-bg" />
+
+    <div class="tabs">
+        {tabs.map((tab) => (
+            <a href={tab.href} class={`tab ${tab.href === Astro.url.pathname ? 'active' : ''}`}>
+                {tab.title}
+            </a>
+        ))}
+    </div>
+    <div class="controls">
+        <div class="control" id="maximise">
+            <i class="nf nf-fae-maximize"/>
+        </div>
+    </div>
+    {title && <div class="title">{title}</div>}
+</div>
+<style lang="scss">
+    .tab-bar, .tabs, .controls {
+        display: flex;
+        flex-direction: row;
+    }
+    .tab-bar {
+        background: var(--darker-bg);
+        width: 100%;
+        position: relative;
+        --bar-height: 3ch;
+        height: var(--bar-height);
+    }
+    .tabs {
+        flex: 1;
+        overflow-x: auto;  // TODO: Make scrollbar pretty
+    }
+
+    .tab {
+        z-index: 2;
+        background: var(--light-bg);
+        width: fit-content;
+        padding: 0.5ch 1ch;
+        height: var(--bar-height);
+        line-height: calc(var(--bar-height) - 1ch);
+        text-decoration: none;
+        color: var(--text-normal);
+        user-select: none;
+    }
+    :is(.tab:hover, .tab:focus):not(.active) {
+        background: var(--dark-bg) !important;
+        outline: none;
+    }
+    .tab.active {
+		background: var(--darkest-bg);
+    }
+
+    .title {
+        z-index: 0;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        line-height: var(--bar-height);
+        color: var(--text-muted);
+        text-wrap: nowrap;
+        user-select: none;
+    }
+
+    .control {
+        z-index: 3;
+        height: var(--bar-height);
+        width: var(--bar-height);
+        text-align: center;
+        line-height: calc(var(--bar-height));
+        
+        border: none;
+        margin: 0;
+        padding: 0;
+
+        cursor: pointer;
+        user-select: none;
+    }
+    .control:hover {
+        background: var(--dark-bg);
+    }
+
+
+    @media screen and (max-width: 600px) {
+         .title {
+            display: none;
+        }
+    }
+    @media screen and (max-width: 400px) {
+         .controls {
+            display: none;
+        }
+    }
+
+    #tab-bar-bg {
+        z-index: 1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        cursor: move;
+    }
+</style>
+
+<script>
+    // @ts-ignore
+    const terminal: HTMLElement = document.getElementById('terminal-window');
+    // @ts-ignore
+    const maximise: HTMLElement = document.getElementById('maximise');
+    // @ts-ignore
+    const titlebar: HTMLElement = document.getElementById('tab-bar-bg');
+
+    maximise.onclick = () => {
+        terminal.classList.toggle('maximised');
+    }
+	titlebar.ondblclick = () => {
+		terminal.classList.toggle('maximised');
+	}
+
+    titlebar.onmousedown = (e) => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+
+        const top = parseInt(getComputedStyle(terminal).top),
+              left = parseInt(getComputedStyle(terminal).left);
+        const startX = e.clientX - left,
+              startY = e.clientY - top;
+        
+        function move(e: MouseEvent) {
+            terminal.style.top = `${e.clientY - startY}px`;
+            terminal.style.left = `${e.clientX - startX}px`;
+        }
+        function stop() {
+            window.removeEventListener('mousemove', move);
+            window.removeEventListener('mouseup', stop);
+        }
+
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', stop);
+    }
+</script>

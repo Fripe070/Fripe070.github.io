@@ -5,7 +5,12 @@ interface Props {
 
 const { title } = Astro.props;
 
-import TabBar from '../components/TabBar.astro';
+import TabBar, { type Tab } from '../components/TerminalTabBar.astro';
+
+const tabs: Tab[] = [
+	{ title: 'Home', href: '/' }, 
+	{ title: 'About', href: '/about' }
+];
 ---
 
 <!doctype html>
@@ -19,14 +24,14 @@ import TabBar from '../components/TabBar.astro';
 		<title>{title}</title>
 	</head>
 	<body>
-		<div class="terminal-window">
-			<nav>
-				<TabBar tabs={[{ title: 'Home', href: '/' }, { title: 'About', href: '/about' }, { title: 'Contact', href: '/contact' }]} />
-			</nav>
-			<main>
-				<slot />
-			</main>
-		</div>
+			<div id="terminal-window">
+				<nav id="titlebar">
+					<TabBar tabs={tabs} title="Fripe's Page" />
+				</nav>
+				<div id="terminal-inner">
+					<slot />
+				</div>
+			</div>
 	</body>
 </html>
 
@@ -34,9 +39,10 @@ import TabBar from '../components/TabBar.astro';
 	body {
 		padding: 1.5ch;
 		display: flex;
+		justify-content: center;
 	}
 
-	.terminal-window {
+	#terminal-window {
 		outline: 2px solid var(--darkest-bg);
 		background: var(--darkest-bg);
 		width: 100%;
@@ -44,11 +50,25 @@ import TabBar from '../components/TabBar.astro';
 		flex-direction: column;
 		--line-height: 2ch;
 		line-height: var(--line-height);
-		main {
+		// overflow: hidden;
+
+		position: relative;
+
+		#terminal-inner {
 			margin: 1ch;
 			flex: 1;
 			position: relative;
+			overflow: hidden;
+			min-height: calc(var(--line-height) * 5);
 		}
+	}
+	
+	#terminal-window:not(.maximised) {
+		width: 120ch;
+	}
+	#terminal-window.maximised {
+		top: unset !important;
+		left: unset !important;
 	}
 </style>
 
@@ -98,7 +118,10 @@ import TabBar from '../components/TabBar.astro';
 	html, body {
 		margin: 0;
 		padding: 0;
-		min-height: 100vh;
+		width: 100%;
+		height: 100%;
+		min-width: 100%;
+		min-height: 100%;
 	}
 
 	* {

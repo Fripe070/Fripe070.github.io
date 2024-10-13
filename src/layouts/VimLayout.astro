@@ -1,0 +1,169 @@
+---
+import Layout from './TerminalLayout.astro';
+---
+
+<Layout title="">
+	<main id="main-content" contenteditable="plaintext-only" spellcheck="false">
+		<slot />
+	</main>
+
+	<div id="vim-bar" style="--mode-bg: var(--one-dark-blue)">
+		<div class="bg-c" style="--bg: var(--mode-bg);">
+			&nbsp;<span id="mode">Normal</span>&nbsp;
+		</div>
+		<div class="slanted" style="--bg1: var(--mode-bg); --bg2: var(--one-dark-coral);" />
+		<div class="bg-c" style="--bg: var(--one-dark-coral);">
+			&nbsp;
+			<!-- <i class="nf nf-cod-location"/> -->
+			{Astro.url.hostname}
+			&nbsp;
+		</div>
+		<div class="slanted" style="--bg1: var(--one-dark-coral); --bg2: transparent;" />
+	</div>
+	<div class="bottom-bar">
+	</div>
+</Layout>
+
+<style lang="scss">
+	#vim-bar {
+		background: var(--text-muted);
+		color: var(--darkest-bg);
+		width: 100%;
+		height: var(--line-height);
+		position: absolute;
+		bottom: var(--line-height);
+		display: flex;
+		flex-direction: row;
+        user-select: none;
+	}	
+	.bottom-bar {
+		background: var(--dark-bg);
+		width: 100%;
+		height: var(--line-height);
+		position: absolute;
+		bottom: 0;
+	}
+	.bg-c {
+		color: var(--fg);
+		background-color: var(--bg);
+		width: fit-content;
+		height: var(--line-height);
+		display: flex;
+		flex-direction: row;
+	}
+	.slanted {
+		width: 1ch;
+		height: var(--line-height);
+		background: linear-gradient(calc(90deg - 45deg / 2), var(--bg1) 50%, var(--bg2) 50%);
+	}
+	.nf {
+		position: relative;
+		top: 1pt;
+	}
+
+	#main-content {
+		min-height: calc(100% - 2 * var(--line-height));
+		outline: none;
+		word-break: break-word;
+	}
+</style>
+
+<script>
+	// @ts-ignore
+	const mainContent: HTMLElement = document.getElementById('main-content');
+	// @ts-ignore
+	const vimBar: HTMLElement = document.getElementById('vim-bar');
+	// @ts-ignore
+	const modeEl: HTMLElement = document.getElementById('mode');
+
+	const NORMAL = 'Normal';
+	const INSERT = 'Insert';
+	const VISUAL = 'Visual';
+	const VISUAL_INSERT = 'Visual (I)';
+
+	const setNormalMode = () => {
+		modeEl.innerText = NORMAL;
+		vimBar.style.setProperty('--mode-bg', 'var(--one-dark-blue)');
+	};
+	const setInsertMode = () => {
+		modeEl.innerText = INSERT;
+		vimBar.style.setProperty('--mode-bg', 'var(--one-dark-green)');
+	};
+	const setVisualMode = () => {
+		modeEl.innerText = VISUAL;
+		vimBar.style.setProperty('--mode-bg', 'var(--one-dark-purple)');
+	};
+	const setVisualInsertMode = () => {
+		modeEl.innerText = VISUAL_INSERT;
+		vimBar.style.setProperty('--mode-bg', 'var(--one-dark-purple)');
+	};
+	const getMode = () => modeEl.innerText;
+
+	document.onkeydown = (e) => {
+		if (getMode() !== NORMAL) return;
+
+		if (e.key === ':') {
+			e.preventDefault();
+			console.log('Command mode OUTER');
+		}
+	};
+
+	mainContent.onkeydown = (e) => {
+		// @ts-ignore
+		const selecting: boolean = document.getSelection() && document.getSelection().toString() !== '';
+		const shifting: boolean = e.shiftKey;
+		const mode = getMode();
+
+		if (e.key === 'Escape') {
+			if (mode.startsWith(VISUAL) && selecting) {
+				return;
+			}
+			return setNormalMode();
+		}
+		
+		if (getMode() === NORMAL) {
+			if (e.key === 'i') {
+				setInsertMode();
+				e.preventDefault();
+				return;
+			}
+			if (e.key === ':') {
+				e.preventDefault();
+				console.log('Command mode');
+				return;
+			}
+		}
+
+		if (e.key.startsWith('Arrow')) {
+			if (mode === VISUAL && !shifting) {
+				setNormalMode();
+			} else if (mode === VISUAL_INSERT && !shifting) {
+				setInsertMode();
+			} else if (mode === NORMAL && shifting) {
+				setVisualMode();
+			}
+			return;
+		}
+		if (["Shift", "Control", "Alt", "Meta"].includes(e.key) || e.key.startsWith("F"))
+			return;
+
+		setInsertMode();
+	};
+	mainContent.onselectstart = () => {
+		if (getMode() === INSERT) {
+			setVisualInsertMode();
+		} else {
+			setVisualMode();
+		}
+	};
+	mainContent.onmouseup = () => {
+		const selection = document.getSelection();
+		if ((!selection || selection.toString() === '') && getMode().startsWith(VISUAL)) {
+			if (getMode() === VISUAL_INSERT) {
+				setInsertMode();
+			} else {
+				setNormalMode();
+			}
+		}
+	};
+</script>
