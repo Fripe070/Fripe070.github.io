@@ -48,15 +48,36 @@ const { fileSystem } = Astro.props;
 		overflow-y: auto;
 		padding-bottom: 5ch;
 
-		img {
-			max-width: 60ch;
-			max-height: 40ch;
+		.img-container {
+			display: inline-block;
+			overflow: hidden;
+			// background-color: var(--darker-bg);
+			border: 1px solid var(--text-muted);
+
+			background: repeating-conic-gradient(var(--darker-bg) 0% 25%, var(--dark-bg) 0% 50%) 50% / 20px 20px;
+			
+			> img {
+				display: block;
+				max-width: 60ch;
+				max-height: 40ch;
+
+				animation: 1s steps(16, end) image-slide-render;
+			}
 		}
 	}
 	#shell-input {
 		all: unset;
 		width: auto;
 		word-break: break-all;
+	}
+
+	@keyframes image-slide-render {
+		from {
+			clip-path: inset(0 0 100% 0);
+		}
+		to {
+			clip-path: inset(0 0 0 0);
+		}
 	}
 </style>
 
@@ -193,7 +214,12 @@ const { fileSystem } = Astro.props;
 				if (fileType === "image") {
 					const img = document.createElement("img");
 					img.src = content;
-					return [true, img];
+
+					const container = document.createElement("div");
+					container.classList.add("img-container");
+					container.appendChild(img);
+
+					return [true, container];
 				} else {
 					return [true, content];
 				}
