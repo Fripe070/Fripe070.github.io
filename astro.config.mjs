@@ -3,12 +3,13 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
+    site: "https://fripe070.github.io",
+    base: "/",
+
     vite: {
         css: {
             preprocessorOptions: {
-                scss: {
-                    api: "modern-compiler"
-                }
+                scss: { api: "modern-compiler" }
             }
         }
     }
