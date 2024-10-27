@@ -2,7 +2,7 @@
 import Layout from './TerminalLayout.astro';
 ---
 
-<Layout title="">
+<Layout>
 	<main id="main-content" contenteditable="plaintext-only" spellcheck="false">
 		<slot />
 	</main>
@@ -62,7 +62,8 @@ import Layout from './TerminalLayout.astro';
 	}
 
 	#main-content {
-		min-height: calc(100% - 2 * var(--line-height));
+		height: calc(100% - 2 * var(--line-height));
+		overflow-y: auto;
 		outline: none;
 		word-break: break-word;
 	}

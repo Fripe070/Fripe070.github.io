@@ -113,8 +113,6 @@ const { tabs, title } = Astro.props;
         left: 0;
         width: 100%;
         height: 100%;
-
-        cursor: move;
     }
 </style>
 
@@ -132,26 +130,4 @@ const { tabs, title } = Astro.props;
 	titlebar.ondblclick = () => {
 		terminal.classList.toggle('maximised');
 	}
-
-    titlebar.onmousedown = (e) => {
-        if (e.button !== 0) return;
-        e.preventDefault();
-
-        const top = parseInt(getComputedStyle(terminal).top),
-              left = parseInt(getComputedStyle(terminal).left);
-        const startX = e.clientX - left,
-              startY = e.clientY - top;
-        
-        function move(e: MouseEvent) {
-            terminal.style.top = `${e.clientY - startY}px`;
-            terminal.style.left = `${e.clientX - startX}px`;
-        }
-        function stop() {
-            window.removeEventListener('mousemove', move);
-            window.removeEventListener('mouseup', stop);
-        }
-
-        window.addEventListener('mousemove', move);
-        window.addEventListener('mouseup', stop);
-    }
 </script>

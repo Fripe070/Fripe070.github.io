@@ -1,6 +1,6 @@
 ---
 interface Props {
-	title: string;
+	title?: string;
 }
 
 const { title } = Astro.props;
@@ -83,7 +83,7 @@ const tabs: Tab[] = [
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: url('https://apod.nasa.gov/apod/image/2410/zaparolliA3.png') no-repeat center center fixed;
+		// background: url('https://apod.nasa.gov/apod/image/2410/zaparolliA3.png');
 		background-size: cover;
 	}
 </style>
