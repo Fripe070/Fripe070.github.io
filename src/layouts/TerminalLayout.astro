@@ -1,5 +1,5 @@
 ---
-interface Props {
+export interface Props {
 	title?: string;
 }
 
@@ -32,7 +32,7 @@ const tabs: Tab[] = [
 		<div id="screen">
 			<div id="terminal-window">
 				<nav id="titlebar">
-					<TabBar tabs={tabs} title="Fripe's Page" />
+					<TabBar tabs={tabs} title={title} />
 				</nav>
 				<div id="terminal-inner">
 					<slot />

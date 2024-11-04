@@ -1,8 +1,15 @@
 ---
-import Layout from './TerminalLayout.astro';
+import Layout, { type Props as TermProps } from './TerminalLayout.astro';
+
+interface VimProps {};
+type Props = VimProps & TermProps;
+
+const { title } = Astro.props;
 ---
 
-<Layout>
+<Layout
+	title={title}
+>
 	<main id="main-content" contenteditable="plaintext-only" spellcheck="false">
 		<slot />
 	</main>
