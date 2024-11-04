@@ -5,6 +5,7 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
     site: "https://fripe070.github.io",
     base: "/",
+    output: "static",
 
     vite: {
         css: {

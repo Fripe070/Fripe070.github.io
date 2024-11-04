@@ -12,12 +12,12 @@ interface Props {
 const { tabs, title } = Astro.props;
 ---
 
-<div class="tab-bar">
+<div id="tab-bar">
     <div id="tab-bar-bg" />
 
     <div class="tabs">
         {tabs.map((tab) => (
-            <a href={tab.href} class={`tab ${tab.href === Astro.url.pathname ? 'active' : ''}`}>
+            <a href={tab.href} class={`tab ${tab.href === Astro.site?.pathname ? 'active' : ''}`}>
                 {tab.title}
             </a>
         ))}
@@ -30,11 +30,11 @@ const { tabs, title } = Astro.props;
     {title && <div class="title">{title}</div>}
 </div>
 <style lang="scss">
-    .tab-bar, .tabs, .controls {
+    #tab-bar, .tabs, .controls {
         display: flex;
         flex-direction: row;
     }
-    .tab-bar {
+    #tab-bar {
         background: var(--darker-bg);
         width: 100%;
         position: relative;
