@@ -10,6 +10,8 @@ interface Props {
 }
 
 const { tabs, title } = Astro.props;
+
+const pathsMatch = (a: string, b: string): boolean => a === b || a === b + '/' || a + '/' === b;
 ---
 
 <div id="tab-bar">
@@ -17,7 +19,7 @@ const { tabs, title } = Astro.props;
 
     <div class="tabs">
         {tabs.map((tab) => (
-            <a href={tab.href} class={`tab ${tab.href === Astro.site?.pathname ? 'active' : ''}`}>
+            <a href={tab.href} class={"tab" + (pathsMatch(tab.href, Astro.url.pathname) ? " active" : "")}>
                 {tab.title}
             </a>
         ))}
