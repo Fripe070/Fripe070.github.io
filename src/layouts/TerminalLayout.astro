@@ -9,7 +9,9 @@ import TabBar, { type Tab } from '../components/TerminalTabBar.astro';
 
 const tabs: Tab[] = [
 	{ title: 'Home', href: '/' }, 
-	{ title: 'About', href: '/about' }
+	{ title: 'About', href: '/about' },
+	{ title: 'Flex', href: '/flex' },
+	{ title: 'Markov', href: '/markov' },
 ];
 ---
 
@@ -67,7 +69,8 @@ const tabs: Tab[] = [
 			margin: 1ch;
 			flex: 1;
 			position: relative;
-			overflow: hidden;
+			overflow-x: hidden;
+			overflow-y: auto;
 			min-height: calc(var(--line-height) * 5);
 		}
 	}

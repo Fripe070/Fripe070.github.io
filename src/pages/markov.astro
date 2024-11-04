@@ -1,0 +1,159 @@
+---
+import Layout from '../layouts/TerminalLayout.astro';
+---
+
+<Layout>
+	<button>Generate</button>
+	<div id="populate">
+		<span id="cursor">_</span>
+	</div>
+</Layout>
+
+<style lang="scss">
+	button {
+		all: unset;
+		cursor: pointer;
+		background: var(--one-dark-blue);
+		color: var(--darkestest-bg);
+	}
+
+	#cursor {
+		animation: blink 1s infinite step-start;
+	}
+
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+</style>
+
+<script>
+	// @ts-ignore
+	const populate: HTMLElement = document.getElementById('populate');
+	// @ts-ignore
+	const button: HTMLButtonElement = document.querySelector('button');
+
+	let wordMap: Map<string, Map<string, number>> | undefined;
+	let abortController: AbortController | undefined;
+
+	const CONTEXT_SIZE = 2;
+
+	button.onclick = async () => {
+		if (!wordMap) {
+			wordMap = await loadMarkov(CONTEXT_SIZE);
+		}
+		const text = generateText({ 
+			mapping: wordMap, 
+			count: Math.floor(Math.random() * 1000) + 50
+		});
+		
+		if (abortController) abortController.abort();
+		abortController = new AbortController();
+
+		populate.innerHTML = document.getElementById("cursor")?.outerHTML || "";
+		let latestElement: HTMLElement | null = null;
+		for await (const char of writeSlowly(text, abortController.signal, 0.25)) {
+			if (!latestElement) {
+				latestElement = document.createElement("span");
+				populate.insertBefore(latestElement, document.getElementById("cursor"));
+			}
+			latestElement.innerText += char;
+			if (char === " ") latestElement = null;
+		}
+	}
+
+	async function* writeSlowly(text: string, signal: AbortSignal, mult = 1.0): AsyncGenerator<string> {
+		for (const char of text) {
+			if (signal?.aborted) break;
+
+			yield char;
+
+			let timeout = Math.floor(Math.random() * 100);
+			if (".!?".includes(char)) timeout += 500;
+			if (",;:".includes(char)) timeout += 200;
+
+			await new Promise(resolve => setTimeout(resolve, timeout * mult));
+		}
+	}
+
+	function generateText(
+		{
+			mapping,
+			count = 100,
+			starting = [],
+			contextSize = CONTEXT_SIZE,
+		}: { 
+			mapping: Map<string, Map<string, number>>,
+			count?: number,
+			starting?: Array<string>,
+			contextSize?: number,
+		}
+	): string {
+		const words = starting || [getRandom(Array.from(mapping.keys()))];
+
+		if (mapping.size == 0) return "";
+		
+		for (let i = 0; i < count; i++) {
+			const lastWord = words.slice(-contextSize).join(" ");
+			const wordMap = mapping.get(lastWord);
+
+			if (!wordMap || wordMap.size === 0) {
+				words.push(getRandom(Array.from(mapping.keys())));
+				continue;
+			}
+			
+			const wordsArray = Array.from(wordMap.keys());
+			const weights = Array.from(wordMap.values()).map(v => Math.pow(v, 15));
+			const nextWord = weightedRandom(wordsArray, weights);
+
+			if (!nextWord) {
+				words.push(getRandom(wordsArray));
+				continue;
+			}
+
+			words.push(nextWord);
+		}
+
+		return words.join(" ");
+	}
+
+	function getRandom<T>(items: Array<T>): T {
+		return items[Math.floor(Math.random() * items.length)];
+	}
+
+	function weightedRandom<T>(items: Array<T>, weights: Array<number>): T | undefined {
+		for (let i = 1; i < weights.length; i++) 
+			weights[i] += weights[i - 1];
+		
+		const random = Math.random() * weights[weights.length - 1];
+
+		for (let i = 0; i < weights.length; i++)
+			if (weights[i] > random) 
+				return items[i];
+
+		return undefined;
+	}
+
+
+	async function loadMarkov(contextSize: number): Promise<Map<string, Map<string, number>>> {
+		const response = await fetch("/text/markov.txt");
+		const text = await response.text();
+		const words = text.toLowerCase().split(/\s+/);
+
+		const map = new Map<string, Map<string, number>>();
+
+		for (let i = 0; i < words.length - contextSize; i++) {
+			const keyWOrds = words.slice(i, i + contextSize);
+			const word = keyWOrds.join(" ");
+			const next = words[i + contextSize];
+
+			if (!map.has(word)) 
+				map.set(word, new Map());
+			
+			const wordMap = map.get(word) as Map<string, number>;
+			wordMap.set(next, (wordMap.get(next) || 0) + 1);
+		}
+		return map;
+	}
+</script>
