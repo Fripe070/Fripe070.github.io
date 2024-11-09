@@ -3,7 +3,7 @@ import Layout, { type Props as TermProps } from './TerminalLayout.astro';
 
 
 interface FileItem {
-	fileType: "image" | "text";
+	fileType: "image" | "text" | "html" | "youtube";
 	content: string;
 }
 type File = [FileItem]; // Purely for deserialisation
@@ -101,6 +101,15 @@ const {
 	#shell .ps1-prompt.fail {
 		color: var(--one-dark-coral);
 	}
+
+	.yt-video {
+		all: unset;
+
+		--ratio: 16 / 9;
+		--height: 16;
+		height: calc(var(--height) * var(--line-height));
+		width: calc(var(--height) * var(--ratio) * var(--line-height));
+	}
 </style>
 
 <script>
@@ -116,12 +125,14 @@ const {
 	const livePS1: HTMLElement = document.getElementById("live-ps1");
 
 	inner.onclick = (event) => {
-		event.preventDefault();
+		// Do nothing if selecting
+		if (window.getSelection()?.toString()) return;
+
 		input.focus();
 	};
 
 	interface FileItem {
-		fileType: "image" | "text";
+		fileType: "image" | "text" | "html" | "youtube";
 		content: string;
 	}
 	type File = [FileItem]; // Purely for deserialisation
@@ -160,6 +171,9 @@ const {
 			if (pathParts[0] === "" && pathParts.length === 1)
 				return undefined;
 		}
+		if (pathParts[pathParts.length - 1] === "") {
+			pathParts.pop();
+		}
 
 		for (const part of pathParts) {
 			if (part === ".") 
@@ -185,6 +199,7 @@ const {
 		"cls": clearCmd,
 		"clear": clearCmd,
 		"echo": (...args: string[]) => {
+			// I know there will be issues not preserving spaces, idrc
 			return [true, args.join(" ")];
 		},
 		"pwd": () => {
@@ -196,7 +211,7 @@ const {
 				return [false, `Directory ${path} not found`];
 			}
 			const currentDir = deepAccess(fileSystem, dir);
-			const items = Object.keys(currentDir);
+			const items = Object.keys(currentDir).sort();
 			return [true, items.map((item) => {
 				return isFile(currentDir[item]) ? item : item + "/";
 			}).join(" ")];
@@ -237,6 +252,22 @@ const {
 					container.appendChild(img);
 
 					return [true, container];
+				} else if (fileType === "html") {
+					const element = document.createElement("div");
+					element.innerHTML = content;
+					return [true, element];
+				} else if (fileType === "youtube") { // YouTube Video URL
+					var url = new URL(content);
+					url.searchParams.set("disablekb", "1");
+					url.searchParams.set("color", "white");
+					url.searchParams.set("rel", "0");
+
+					const element = document.createElement("iframe");
+					element.src = url.toString();
+					element.classList.add("yt-video");
+					element.referrerPolicy = "strict-origin-when-cross-origin";
+					element.allowFullscreen = true;
+					return [true, element];
 				} else {
 					return [true, content];
 				}
@@ -272,9 +303,12 @@ const {
 	const runCommand = (event: KeyboardEvent) => {
 		event.preventDefault();
 
-		const command = input.innerText;
-		const binary = command.split(" ")[0];
-		const args = command.split(" ").slice(1);
+		const command = input.innerText.trim();
+
+		const parts = command.split(" ").map((arg) => arg.trim()).filter((arg) => arg !== "")
+		const binary = parts[0];
+		const args = parts.slice(1);
+		console.log(args)
 		const commandCallback: Command | undefined = commands[binary];
 
 		input.innerHTML = "";

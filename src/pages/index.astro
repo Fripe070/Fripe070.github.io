@@ -4,12 +4,19 @@ import Layout from '../layouts/ShellLayout.astro';
 
 <Layout 
 	fileSystem={{
+		"hey.txt": [{fileType: "text", content: "Hey, there! What're you doing snooping around at root?"}],
 		"home": {
 			"fripe": {
 				"file.txt": [{fileType: "text", content: "Hello, World!"}],
-				"miku": {
-					"miku.png": [{fileType: "image", content: "https://static.wikia.nocookie.net/vocaloid/images/e/e4/MIKU_SP.png/revision/latest"}],
-				}
+				"miku.png": [{fileType: "image", content: "https://static.wikia.nocookie.net/vocaloid/images/e/e4/MIKU_SP.png/revision/latest"}],
+				"music": {
+					"lower.mov": [{fileType: "youtube", content: "https://www.youtube-nocookie.com/embed/3sEptl-psU0"}],
+					"villain.mp4": [{fileType: "youtube", content: "https://www.youtube-nocookie.com/embed/p9FJXfGHtDA"}],
+					"disappearance.webm": [{fileType: "youtube", content: "https://www.youtube-nocookie.com/embed/ldQ5RNBvs4"}],
+					"clout.mkv": [{fileType: "youtube", content: "https://www.youtube-nocookie.com/embed/_AjJZEcMdww"}],
+					"newton.avi": [{fileType: "youtube", content: "https://www.youtube-nocookie.com/embed/ZnroCM3V7eA"}],
+					"talking.mp4": [{fileType: "youtube", content: "https://www.youtube-nocookie.com/embed/2INYgH-Gcjk"}],
+				},
 			},
 		},
 	}}
