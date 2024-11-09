@@ -3,5 +3,33 @@ import Layout from '../layouts/VimLayout.astro';
 ---
 
 <Layout>
-	About me!
+	I'm <a href="https://github.com/Fripe070">Fripe</a>.
+	<br />
+	You might know me from <span class="redacted">here</span> or <span class="redacted">there</span>.
+	<br />
+	<br />
+	I am an experienced programmer, and an <span class="hidden">extremely</span> amateur 3D artist with experience in Blender.
+	<br />
+	I <img class="emoji"src="/img/blue_heart.svg" alt="love" /> voice synthesisers.
+	Hatsune Miku is so cool.
 </Layout>
+
+<style type="scss">
+	a {
+		all: unset;
+		cursor: pointer;
+		text-decoration: underline var(--text-muted) 1px;
+	}
+	.redacted {
+		background: var(--text-normal);
+	}
+	.hidden {
+		display: none;
+	}
+	.emoji {
+		display: inline-block;
+		width: var(--line-height);
+		height: var(--line-height);
+		vertical-align: bottom;
+	}
+</style>
