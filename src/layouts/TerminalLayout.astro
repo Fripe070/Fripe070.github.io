@@ -1,9 +1,10 @@
 ---
 export interface Props {
 	title?: string;
+	description?: string;
 }
 
-const { title } = Astro.props;
+const { title, description = "Fripe's site" } = Astro.props;
 
 import TabBar, { type Tab } from '../components/TerminalTabBar.astro';
 
@@ -18,7 +19,6 @@ const tabs: Tab[] = [
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
@@ -27,6 +27,7 @@ const tabs: Tab[] = [
 		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
 		<link href="https://www.nerdfonts.com/assets/css/webfont.css" rel="stylesheet">
 		<title>{title}</title>
+		<meta name="description" content={description} />
 	</head>
 	<body>
 		<div id="wallpaper" />
