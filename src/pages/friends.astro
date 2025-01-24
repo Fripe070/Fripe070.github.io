@@ -1,0 +1,41 @@
+---
+import FriendCard from '../components/FriendCard.astro';
+import Layout from '../layouts/TerminalLayout.astro';
+import { Image } from 'astro:assets';
+import valkPfp from "../assets/valk.png";
+import andrewPfp from "../assets/andrew.png";
+---
+
+<Layout>
+	<main>
+		<FriendCard
+			link="https://www.randomairborne.dev/"
+			names={['valkyrie_pilot', "valk"]}
+			avatar={valkPfp.src}
+			pixelated={true}
+			background='#55879b'
+		>
+			Nerdy computer train friend.
+		</FriendCard>
+		<FriendCard
+			link="https://thatother.dev"
+			names={["ThatOtherAndrew", "Andrew"]}
+			avatar={andrewPfp.src}
+			background='#489268'
+		>
+			Nerdy computer music friend.
+		</FriendCard>
+	</main>
+
+</Layout>
+
+<style lang="scss">
+	main {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1ch;
+	}
+</style>
+
+<script>
+</script>

@@ -29,15 +29,15 @@ const {
 <Layout
 	title={title}
 >
-	<div 
+	<main 
 		id="shell" 
 		tabindex="0"
 		data-filesystem={JSON.stringify(fileSystem)}
 		data-default-path={defaultPath.join("/")}
 	>
-		<div>
+		<main>
 			<slot />
-		</div>
+		</main>
 		<div id="input-line">
 			<span id="live-ps1" class="ps1-prompt sucess">$</span>
 			<div 
@@ -47,10 +47,11 @@ const {
 				contenteditable="plaintext-only"
 				spellcheck="false"
 				autofocus
+				tabindex="0"
 			>
 			</div>
 		</div>
-	</div>
+	</main>
 </Layout>
 
 <style type="scss">
@@ -120,7 +121,7 @@ const {
 	// @ts-ignore
 	const inputLine: HTMLElement = document.getElementById("input-line");
 	// @ts-ignore
-	const input: HTMLElement = document.getElementById("shell-input");
+	const input: HTMLDivElement = document.getElementById("shell-input");
 	// @ts-ignore
 	const livePS1: HTMLElement = document.getElementById("live-ps1");
 
@@ -308,7 +309,6 @@ const {
 		const parts = command.split(" ").map((arg) => arg.trim()).filter((arg) => arg !== "")
 		const binary = parts[0];
 		const args = parts.slice(1);
-		console.log(args)
 		const commandCallback: Command | undefined = commands[binary];
 
 		input.innerHTML = "";
