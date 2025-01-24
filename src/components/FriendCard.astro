@@ -1,122 +1,107 @@
 ---
 export interface Props {
     names: [string, ...string[]];
-    birthTimestamp?: Date;
     avatar: string;
     pixelated?: boolean
     link?: string;
-    background: string;
+    colour?: string;
 };
 
 const { 
     names, 
-    birthTimestamp, 
     avatar, 
     pixelated = true, 
     link,
-    background,
+    colour,
 } = Astro.props;
 ---
 
-<a class="card" href={link} style={{"--user-background": background,}}>
-    <slot name="background" />
-
-    <div class="avatar" style={{ backgroundImage: `url(${avatar})` }} class:list={pixelated ? 'pixelated' : ''}>
-        {birthTimestamp !== undefined && (
-            <span class="age"> {(() => {
-                return Math.floor(
-                    (new Date().getTime() - birthTimestamp.getTime())
-                    / (1000 * 60 * 60 * 24 * 365.25)
-                );
-            })()}
-            </span>
-        )}
-    </div>
-    <div class="content">
+<a class="card" href={link} style={{ "--user-colour": colour ?? "var(--lighter-bg)" }}>
+    <div class="titlebar">
         <span class="names">
             <span>{names[0]}</span>
             {names.length > 1 && " / " 
             + names.slice(1).join(" / ")}
         </span>
-        
-        {Astro.slots.default !== undefined && (
-            <div class="description">
-                <slot />
-            </div>
-        )}
+        <i class="link-icon nf nf-oct-link"/>
+    </div>
+    
+    
+
+    <div class="inside">
+        <div 
+            class="avatar" 
+            style={{ backgroundImage: `url(${avatar})` }} 
+            class:list={pixelated ? 'pixelated' : ''}
+        />
+    
+        <div class="content">
+            {Astro.slots.default !== undefined && (
+                <div class="description">
+                    <slot />
+                </div>
+            )}
+        </div>
     </div>
 </a>
 
 <style lang="scss">
     .card {
-        --border-rad: 0ch;
-        --padding: 1ch;
-
-        position: relative;
         width: fit-content;
         min-width: 30ch;
-        border-radius: var(--border-rad);
-        overflow: hidden;
-        padding: var(--padding);
+
         display: flex;
-        flex-direction: row;
-        gap: var(--padding);
-
-        > .content {
-            display: flex;
-            flex-direction: column;
-            gap: var(--padding);
-        }
-
-        background: var(--user-background);
-        background-size: cover;
-        background-position: center;
-
-        > * {
-            z-index: 2;
-        }
+        flex-direction: column;
 
         text-decoration: none;
         color: var(--text-normal);
+    
+        --border: .25ch solid var(--user-colour);
+        border: var(--border);
     }
+    .titlebar {
+        background-color: var(--light-bg);
+        border-bottom: var(--border);
+        padding: 0.5ch;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
 
-    .background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
+        > .link-icon {
+            margin-left: 1ch;
+            color: var(--text-normal);
+            font-size: 1.5em;
+            width: 1.5em;
+            text-align: center;
+        }
     }
-
+    .inside {
+        background-color: var(--darker-bg);
+        display: flex;
+        flex-direction: row;
+    }
+    .content {
+        padding: 1ch;
+        border-left: var(--border);
+    }
     .avatar {
-        width: 10ch;
-        height: 10ch;
-        border-radius: calc(var(--border-rad) - var(--padding));
+        min-width: 10ch;
+        min-height: 10ch;
         background-image: url({avatar});
         background-size: cover;
         background-position: center;
-        position: relative;
-        overflow: hidden;
-
-        .age {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            border-top-left-radius: calc(var(--border-rad) - var(--padding));
-            backdrop-filter: blur(1ch) brightness(0.75);
-            padding: 0.25ch;
-        }
-    }
-    .pixelated {
-        image-rendering: pixelated;
     }
     .names {
         font-size: 1.5em;
+        line-height: 2ch;
+
         color: var(--text-normal);
         :first-child {
             font-weight: bold;
         }
     }
-    
+    .pixelated {
+        image-rendering: pixelated;
+    }
 </style>
