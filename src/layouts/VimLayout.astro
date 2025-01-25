@@ -10,8 +10,7 @@ const { title } = Astro.props;
 <Layout
 	title={title}
 >
-	<main id="main-content" contenteditable="plaintext-only" spellcheck="false">
-		{/* TODO: Chromium hates contenteditable, so I will need to preprocess this to dedent and remove newlines. How? */}
+	<main id="main-content" contenteditable="true" spellcheck="false">
 		<slot />
 	</main>
 
